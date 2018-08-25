@@ -5,7 +5,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Favicon from 'linnia-brand/Favicon';
 import store from './store';
 import AppContainer from './containers/AppContainer';
-import Home from './ip/home'
+import Home from './ip/home/home'
 /*
   Remove this ThemeProvider and insert your own to quickly restyle the application!
 */
