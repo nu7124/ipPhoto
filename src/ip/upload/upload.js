@@ -34,14 +34,16 @@ class Upload extends Component {
             ipfsHash: '',
             web3: null,
             buffer: null,
-            account: null
+            account: null,
+            meta:"",
+            file: '',
+            imagePreviewUrl: ''
         }
 
         this.captureFile = this.captureFile.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         const { classes } = props;
         this.classes = classes;  
-        this.state = {file: '',imagePreviewUrl: ''};
     }
 
     componentWillMount() {
@@ -94,21 +96,30 @@ class Upload extends Component {
     //WHEN YOU SUBMIT AN IMAGE IT WILL UPLOAD TO IPFS
     async onSubmit(event) {
         var img = document.getElementById("imagePreview");
+        var makeAndModel = document.getElementById("makeAndModel");
+        var make = '';
+        var model = '';
+        var cameraSettings = '';
+        var dateTimeOriginal = '';
         EXIF.getData(img, function() {
-            var makeAndModel = document.getElementById("makeAndModel");
-            var make = EXIF.getTag(this, "Make");
-            var model = EXIF.getTag(this, "Model");
-            var cameraSettings = EXIF.getTag(this, "undefined");
-            var dateTimeOriginal = EXIF.getTag(this, "DateTimeOriginal");
+           
+            make = EXIF.getTag(this, "Make");
+            model = EXIF.getTag(this, "Model");
+            cameraSettings = EXIF.getTag(this, "undefined");
+            dateTimeOriginal = EXIF.getTag(this, "DateTimeOriginal");
 
             if(make === undefined && model === undefined ) {
                 make = 'No metadata found for this image';
                 model = '';
             }
-           
-            makeAndModel.innerHTML = `${make}, ${model}, ${cameraSettings}, ${dateTimeOriginal}`;
+            // makeAndModel.innerHTML = `${make}, ${model}, ${cameraSettings}, ${dateTimeOriginal}`;
         
         });
+
+        this.setState({
+            meta:`${make}, ${model}, ${cameraSettings}, ${dateTimeOriginal}`
+        })
+        console.log("STAET METEAERAERT", this.state)
 
         event.preventDefault()
         console.log("ABOUT TO DEFINE records")
@@ -164,7 +175,7 @@ class Upload extends Component {
                         </div>
                     </div>
                     <div>
-                    Metadata:<br></br> <span id="makeAndModel"></span>
+                    Metadata:<br></br> <span id="makeAndModel">{this.state.meta}</span>
                     </div>
                     <Button 
                         variant="contained"
