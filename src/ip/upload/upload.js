@@ -17,12 +17,11 @@ const Linnia = require('@linniaprotocol/linnia-js')
 const linnia = new Linnia(web3, ipfs)
 
 const styles = theme => ({
-    button: {
-      margin: theme.spacing.unit,
-    },
+    
     input: {
       display: 'none',
     },
+     
   });
 
 
@@ -41,6 +40,7 @@ class Upload extends Component {
         this.onSubmit = this.onSubmit.bind(this);
         const { classes } = props;
         this.classes = classes;  
+        this.state = {file: '',imagePreviewUrl: ''};
     }
 
     componentWillMount() {
@@ -73,6 +73,22 @@ class Upload extends Component {
         }
     }
 
+    _handleImageChange(e) {
+        e.preventDefault();
+    
+        let reader = new FileReader();
+        let file = e.target.files[0];
+    
+        reader.onloadend = () => {
+          this.setState({
+            file: file,
+            imagePreviewUrl: reader.result
+          });
+        }
+    
+        reader.readAsDataURL(file)
+      }
+
     //WHEN YOU SUBMIT AN IMAGE IT WILL UPLOAD TO IPFS
     async onSubmit(event) {
         event.preventDefault()
@@ -98,15 +114,23 @@ class Upload extends Component {
     }
 
     render(){
+        let {imagePreviewUrl} = this.state;
+        let $imagePreview = null;
+        if (imagePreviewUrl) {
+          $imagePreview = (<img src={imagePreviewUrl} />);
+        } else {
+          $imagePreview = (<div className="previewText">Please select an Image for Preview</div>);
+      }
+        
         return(
             <div id="upload">
-                <form onSubmit={this.onSubmit} >
                     <input
                         accept="image/*"
                         id="contained-button-file"
                         multiple
                         type="file"
                         className={this.classes.input}
+                        onChange={(e)=>this._handleImageChange(e)} 
                     />
                      <label htmlFor="contained-button-file">
                         <Button 
@@ -116,19 +140,17 @@ class Upload extends Component {
                         Upload
                         </Button>
                     </label>
-                    <TextField
-                        label="File Location"
-                        id="simple-start-adornment"
-                        onChange={this.captureFile}
-                        disabled
-                    />
                     <Button 
                         variant="contained"
                         onClick={this.onSubmit} >
                         Submit
                     </Button>
-                </form>
-            </div>
+                    <div className="previewComponent">
+                        <div className="imgPreview">
+                        {$imagePreview}
+                        </div>
+                    </div>
+                </div>
         )
     }
 }
