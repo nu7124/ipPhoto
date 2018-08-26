@@ -10,6 +10,7 @@ import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import EXIF from 'exif-js';
 import PropTypes from 'prop-types';
 const Web3 = require('web3')
 const web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/6a24adb56fe24c919b1ca033ff24b8e1'))
@@ -89,8 +90,18 @@ class Upload extends Component {
         reader.readAsDataURL(file)
       }
 
+     
+
     //WHEN YOU SUBMIT AN IMAGE IT WILL UPLOAD TO IPFS
     async onSubmit(event) {
+        var img = document.getElementById("imagePreview");
+        EXIF.getData(img, function() {
+            var make = EXIF.getTag(this, "Make");
+            var model = EXIF.getTag(this, "Model");
+            var makeAndModel = document.getElementById("makeAndModel");
+            makeAndModel.innerHTML = `${make} ${model}`;
+        });
+        
         event.preventDefault()
         console.log("ABOUT TO DEFINE records")
         const {records} = await linnia.getContractInstances();
@@ -117,11 +128,10 @@ class Upload extends Component {
         let {imagePreviewUrl} = this.state;
         let $imagePreview = null;
         if (imagePreviewUrl) {
-          $imagePreview = (<img src={imagePreviewUrl} />);
+          $imagePreview = (<img id="imagePreview" src={imagePreviewUrl} />);
         } else {
           $imagePreview = (<div className="previewText">Please select an Image for Preview</div>);
-      }
-        
+        }
         return(
             <div id="upload">
                     <input
@@ -144,6 +154,9 @@ class Upload extends Component {
                         <div className="imgPreview">
                         {$imagePreview}
                         </div>
+                    </div>
+                    <div>
+                    Make and model: <span id="makeAndModel"></span>
                     </div>
                     <Button 
                         variant="contained"
