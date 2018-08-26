@@ -37,7 +37,7 @@ class Header extends Component {
     const { classes } = this.props;
 
     return (
-      <AppBar position='sticky' color='primary'>
+      <AppBar position='sticky' color='secondary'>
         <Toolbar className={classes.tabs}>
           <Typography variant="title" color="inherit">
             ipPhoto
