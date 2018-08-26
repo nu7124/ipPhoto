@@ -2,16 +2,33 @@ import React, { Component } from 'react';
 import ipfs from '../ipfs'
 import './upload.css'
 import getWeb3 from '../getWeb3'
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import PropTypes from 'prop-types';
 const Web3 = require('web3')
 const web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/6a24adb56fe24c919b1ca033ff24b8e1'))
 const Linnia = require('@linniaprotocol/linnia-js')
 const linnia = new Linnia(web3, ipfs)
 
+const styles = theme => ({
+    button: {
+      margin: theme.spacing.unit,
+    },
+    input: {
+      display: 'none',
+    },
+  });
 
 
 class Upload extends Component {
 
-    constructor(){
+    constructor(props){
         super()
         this.state = {
             ipfsHash: '',
@@ -22,6 +39,8 @@ class Upload extends Component {
 
         this.captureFile = this.captureFile.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        const { classes } = props;
+        this.classes = classes;  
     }
 
     componentWillMount() {
@@ -82,12 +101,36 @@ class Upload extends Component {
         return(
             <div id="upload">
                 <form onSubmit={this.onSubmit} >
-                    <input type='file' onChange={this.captureFile} />
-                    <input type='submit' />
+                    <input
+                        accept="image/*"
+                        id="contained-button-file"
+                        multiple
+                        type="file"
+                        className={this.classes.input}
+                    />
+                     <label htmlFor="contained-button-file">
+                        <Button 
+                        variant="contained" 
+                        component="span"
+                       >
+                        Upload
+                        </Button>
+                    </label>
+                    <TextField
+                        label="File Location"
+                        id="simple-start-adornment"
+                        onChange={this.captureFile}
+                        disabled
+                    />
+                    <Button 
+                        variant="contained"
+                        onClick={this.onSubmit} >
+                        Submit
+                    </Button>
                 </form>
             </div>
         )
     }
 }
 
-export default Upload;
+export default withStyles(styles)(Upload);
