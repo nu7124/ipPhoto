@@ -164,7 +164,7 @@ class Upload extends Component {
                         </div>
                     </div>
                     <div>
-                    Make and model: <span id="makeAndModel"></span>
+                    Metadata:<br></br> <span id="makeAndModel"></span>
                     </div>
                     <Button 
                         variant="contained"
