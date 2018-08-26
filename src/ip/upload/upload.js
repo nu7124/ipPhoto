@@ -93,19 +93,21 @@ class Upload extends Component {
 
     //WHEN YOU SUBMIT AN IMAGE IT WILL UPLOAD TO IPFS
     async onSubmit(event) {
-
         var img = document.getElementById("imagePreview");
-
         EXIF.getData(img, function() {
             var makeAndModel = document.getElementById("makeAndModel");
             var make = EXIF.getTag(this, "Make");
             var model = EXIF.getTag(this, "Model");
+            var cameraSettings = EXIF.getTag(this, "undefined");
+            var dateTimeOriginal = EXIF.getTag(this, "DateTimeOriginal");
 
             if(make === undefined && model === undefined ) {
                 make = 'No metadata found for this image';
                 model = '';
             }
-            makeAndModel.innerHTML = `${make} ${model}`;
+           
+            makeAndModel.innerHTML = `${make}, ${model}, ${cameraSettings}, ${dateTimeOriginal}`;
+        
         });
 
         event.preventDefault()
