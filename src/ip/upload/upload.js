@@ -13,10 +13,12 @@ import Button from '@material-ui/core/Button';
 import EXIF from 'exif-js';
 import PropTypes from 'prop-types';
 import 'typeface-roboto';
+import store from '../../store'
 const Web3 = require('web3')
 const web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/6a24adb56fe24c919b1ca033ff24b8e1'))
 const Linnia = require('@linniaprotocol/linnia-js')
-const linnia = new Linnia(web3, ipfs)
+const linnia = new Linnia(web3, ipfs, { hubAddress: '0x177bf15e7e703f4980b7ef75a58dc4198f0f1172' })
+
 
 const styles = theme => ({
     
@@ -37,20 +39,21 @@ class Upload extends Component {
             buffer: null,
             account: null,
             meta:"",
-            file: '',
-            imagePreviewUrl: ''
+            imagePreviewUrl: '',
+            file:''
         }
 
         this.captureFile = this.captureFile.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         const { classes } = props;
         this.classes = classes;  
+        this.onShare = this.onShare.bind(this);
     }
 
-    componentWillMount() {
+    async componentWillMount() {
         // Get network provider and web3 instance.
         // See utils/getWeb3 for more info.
-        
+
         getWeb3
         .then(results => {
           this.setState({
@@ -70,7 +73,10 @@ class Upload extends Component {
         event.preventDefault()
         const file = event.target.files[0]
         const reader = new window.FileReader()
+
         reader.readAsArrayBuffer(file)
+        this.setState({file})
+        console.log(this.state.file)
         reader.onloadend = () => {
           this.setState({ buffer: Buffer(reader.result) })
           console.log('buffer', this.state.buffer)
@@ -112,6 +118,8 @@ class Upload extends Component {
             if(make === undefined && model === undefined ) {
                 make = 'No metadata found for this image';
                 model = '';
+                cameraSettings = '';
+                dateTimeOriginal = '';
             }
             // makeAndModel.innerHTML = `${make}, ${model}, ${cameraSettings}, ${dateTimeOriginal}`;
         
@@ -125,23 +133,33 @@ class Upload extends Component {
         event.preventDefault()
         console.log("ABOUT TO DEFINE records")
         const {records} = await linnia.getContractInstances();
+        // const owner = "0x54CE79c444897dCC0E875409eF2b8CFd26d40Baa"
+        
+
+        const [owner] = await web3.eth.getAccounts();
 
         console.log("STATE BEFORE SUBMIT", this.state)
         console.log("ADDING...")
-        ipfs.files.add(this.state.buffer, (error, result) => {
-          if(error) {
-            console.error(error)
-            return
-          }
-        //   this.simpleStorageInstance.set(result[0].hash, { from: this.state.account }).then((r) => {
+        ipfs.files.add(this.state.buffer, async (error, result) => {
+            if(error) {
+                console.error(error)
+                return
+            }
             this.setState({ ipfsHash: result[0].hash })
             console.log('ifpsHash', this.state.ipfsHash)
-            records.addRecord(this.state.ipfsHash, {name:'test'})
-            .then(()=>{
-                console.log("IPFS hash has beed added to the record")
-            })
-        //   })
+            const hash = linnia.web3.utils.sha3(JSON.stringify(this.state.buffer));
+            console.log("ADDING WITH LINNI", hash)
+            console.log("OWNER", owner)
+            await records.addRecord(hash, {"name":"test"}, this.state.ipfsHash, {
+                from: owner,
+                gas: 500000,
+                gasPrice: 20000000000
+            },)
         })
+    }
+
+    onShare(){
+
     }
 
     render(){
@@ -183,6 +201,18 @@ class Upload extends Component {
                         onClick={this.onSubmit} >
                         Submit
                     </Button>
+                
+                <h3>Hash: {this.state.ipfsHash}</h3>
+
+                {/* <form onSubmit={this.onShare} id="shareform">
+                    <h6>Data Hash</h6>
+                    <input type='text' onChange={this.captureFile} />
+                    <h6>Recipient Public Key</h6>
+                    <input type='text' onChange={this.captureFile} />
+                    <h6>Data Hash</h6>
+                    <input type='text' onChange={this.captureFile} />
+                    <input type='submit' />
+                </form> */}
                 </div>
         )
     }

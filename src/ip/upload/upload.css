@@ -1,3 +1,4 @@
+
 button {
     margin:10px;
 }
@@ -18,3 +19,7 @@ img {
     height: 100%;
 }
   
+#shareform{
+    display:grid;
+    justify-content: center;
+}
