@@ -12,6 +12,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import EXIF from 'exif-js';
 import PropTypes from 'prop-types';
+import 'typeface-roboto';
 const Web3 = require('web3')
 const web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/6a24adb56fe24c919b1ca033ff24b8e1'))
 const Linnia = require('@linniaprotocol/linnia-js')
