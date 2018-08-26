@@ -108,6 +108,9 @@ class Upload extends Component {
         var model = '';
         var cameraSettings = '';
         var dateTimeOriginal = '';
+
+        delete img.exifdata;
+        
         EXIF.getData(img, function() {
            
             make = EXIF.getTag(this, "Make");
