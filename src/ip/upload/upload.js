@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import ipfs from '../ipfs'
 import './upload.css'
 import getWeb3 from '../getWeb3'
+import store from '../../store'
 const Web3 = require('web3')
 const web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/6a24adb56fe24c919b1ca033ff24b8e1'))
 const Linnia = require('@linniaprotocol/linnia-js')
-const linnia = new Linnia(web3, ipfs)
+const linnia = new Linnia(web3, ipfs, { hubAddress: '0x177bf15e7e703f4980b7ef75a58dc4198f0f1172' })
 
 
 
@@ -24,10 +25,12 @@ class Upload extends Component {
         this.onSubmit = this.onSubmit.bind(this);
     }
 
-    componentWillMount() {
+    async componentWillMount() {
         // Get network provider and web3 instance.
         // See utils/getWeb3 for more info.
-        
+        const [owner] = await web3.eth.getAccounts();
+        console.log("OWNER", owner)
+
         getWeb3
         .then(results => {
           this.setState({
@@ -59,22 +62,23 @@ class Upload extends Component {
         event.preventDefault()
         console.log("ABOUT TO DEFINE records")
         const {records} = await linnia.getContractInstances();
-
+        const owner = "0x54CE79c444897dCC0E875409eF2b8CFd26d40Baa"
         console.log("STATE BEFORE SUBMIT", this.state)
         console.log("ADDING...")
-        ipfs.files.add(this.state.buffer, (error, result) => {
-          if(error) {
-            console.error(error)
-            return
-          }
-        //   this.simpleStorageInstance.set(result[0].hash, { from: this.state.account }).then((r) => {
+        ipfs.files.add(this.state.buffer, async (error, result) => {
+            if(error) {
+                console.error(error)
+                return
+            }
             this.setState({ ipfsHash: result[0].hash })
             console.log('ifpsHash', this.state.ipfsHash)
-            records.addRecord(this.state.ipfsHash, {name:'test'})
-            .then(()=>{
-                console.log("IPFS hash has beed added to the record")
-            })
-        //   })
+            const hash = linnia.web3.utils.sha3(JSON.stringify(this.state.ipfsHash));
+            console.log("ADDING WITH LINNI")
+            // await records.addRecord(hash, {"test":"ing"}, this.state.ipfsHash, {
+            //     from: owner,
+            //     gas: 500000,
+            //     gasPrice: 20000000000
+            // })
         })
     }
 
