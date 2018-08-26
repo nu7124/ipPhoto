@@ -140,16 +140,16 @@ class Upload extends Component {
                         Upload
                         </Button>
                     </label>
-                    <Button 
-                        variant="contained"
-                        onClick={this.onSubmit} >
-                        Submit
-                    </Button>
                     <div className="previewComponent">
                         <div className="imgPreview">
                         {$imagePreview}
                         </div>
                     </div>
+                    <Button 
+                        variant="contained"
+                        onClick={this.onSubmit} >
+                        Submit
+                    </Button>
                 </div>
         )
     }
