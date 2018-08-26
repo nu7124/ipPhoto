@@ -126,7 +126,7 @@ class Upload extends Component {
         });
 
         this.setState({
-            meta:`${make}, ${model}, ${cameraSettings}, ${dateTimeOriginal}`
+            meta:`${make} ${model} ${cameraSettings} ${dateTimeOriginal}`
         })
         console.log("STAET METEAERAERT", this.state)
 
