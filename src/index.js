@@ -22,8 +22,8 @@ ReactDOM.render(
     <Provider store={store}>
       <CssBaseline>
         <ThemeProvider>
-          <AppContainer />
-          {/* <Home /> */}
+          {/* <AppContainer /> */}
+          <Home />
         </ThemeProvider>
       </CssBaseline>
     </Provider>
